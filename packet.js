@@ -68,10 +68,12 @@ module.exports = packet = {
                     console.log("Logging in..."); // Debug
 
                     console.log("Login result: "+result);
+
                     if(result) {
                         c.user = user;
-                        c.enterRoom(c.user.current_room);
                         c.socket.write(packet.build(["LOGIN", "TRUE", c.user.current_room, c.user.pos_x, c.user.pos_y, c.user.username]));
+
+                        c.enterRoom(c.user.current_room);
                     }
                     else {
                         c.socket.write(packet.build(["LOGIN", "FALSE"]));
@@ -111,16 +113,17 @@ module.exports = packet = {
 
                 console.log("Target room: "+data.target_room);
 
-                c.leaveRoom(c.user.current_room);
-                c.enterRoom(data.target_room);
-
-                c.user.current_room = data.target_room;
-
                 var pos_x = maps[data.target_room].start_x;
                 var pos_y = maps[data.target_room].start_y;
 
+
+                c.leaveRoom(c.user.current_room);
+                c.user.current_room = data.target_room;
+                c.enterRoom(data.target_room);
+
+                //c.broadcastRoom(packet.build(["POS", c.user.username, pos_x, pos_y]));
+
                 c.socket.write(packet.build(["WARP", c.user.current_room, pos_x, pos_y]));
-                c.broadcastRoom(packet.build(["POS", c.user.username, pos_x, pos_y]));
                 break;
         }
     }

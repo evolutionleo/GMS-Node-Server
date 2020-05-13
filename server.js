@@ -28,7 +28,7 @@ map_files.forEach(function(mapFile) {
     maps[map.room] = map;
 });
 
-
+// Create server
 net.createServer(function(socket) {
 
     console.log("Socket connected.");
@@ -43,7 +43,7 @@ net.createServer(function(socket) {
     socket.on('end', c.end);
 
     socket.on('data', c.data);
-}).listen(config.port);
+}).listen(config.port); // Start server
 
 console.log("Initializing complete.");
 console.log("Server running on port " + config.port);

@@ -5,26 +5,33 @@ var _ = require('underscore');
 module.exports = function() {
     var client = this;
 
-    // Will be added on runtime:
-    //this.socket = {}
-    //this.user = {}
     this.enterRoom = function(room) {
+        
         maps[room].clients.forEach(function(otherClient) {
-            otherClient.socket.write(packet.build(["ENTER", client.user.username, client.user.pos_x, client.user.pos_y]));
-
-            if(client.user.username != otherClient.user.username)
-                client.socket.write(packet.build(["POS", otherClient.user.username, otherClient.user.pos_x, otherClient.user.pos_y]));
+            if(client.user.username != otherClient.user.username) {
+                //otherClient.socket.write(packet.build(["ENTER", client.user.username, client.user.pos_x, client.user.pos_y]));
+                //client.socket.write(packet.build(["POS", otherClient.user.username, otherClient.user.pos_x, otherClient.user.pos_y]));
+                //client.arr.push("POS", otherClient.user.username, otherClient.user.pos_x, otherClient.user.pos_y);
+            }
         });
 
+        client.broadcastRoom(packet.build(["POS", client.user.username, client.user.pos_x, client.user.pos_y]));
+        
+
+        //Add self to room's client list
         maps[room].clients.push(client);
     };
     this.leaveRoom = function(room) {
-        var idx = maps[room].clients.findIndex(function(element, index) {
-            if(element == client) { return true; }
+        var idx = maps[room].clients.findIndex(function(otherClient) {
+            if(otherClient.user.username == client.user.username) { return true; }
             else { return false; }
         });
 
+        // Delete self from previous room's client list
         maps[room].clients.splice(idx, 1);
+
+        // And tell everyone we're leaving
+        client.broadcastRoom(packet.build(["LEAVE", client.user.username]));
     };
     this.broadcastRoom = function(packData) {
         maps[client.user.current_room].clients.forEach(function(otherClient) {
@@ -52,8 +59,10 @@ module.exports = function() {
     };
 
     this.end = function() {
-        client.user.save();
-        client.leaveRoom(client.user.current_room);
+        if(typeof client.user !== "undefined") {
+            client.user.save();
+            client.leaveRoom(client.user.current_room);
+        }
         //client.user.close();
         console.log("Socket ended.");
     };
