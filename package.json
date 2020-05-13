@@ -1,0 +1,18 @@
+{
+    "name": "node-js",
+    "version": "0.0.1",
+    "private": true,
+    "description": "my first socket.io app",
+    "main": "server.js",
+    "author": {
+        "name": "Evoleo"
+    },
+    "dependencies": {
+        "binary-parser": "^1.6.2",
+        "extend": "^3.0.2",
+        "minimist": "^1.2.5",
+        "mongoose": "^5.9.13",
+        "performance-now": "^2.1.0",
+        "underscore": "^1.10.2"
+    }
+}
