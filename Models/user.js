@@ -7,7 +7,7 @@ var userSchema = new mongoose.Schema({
 
     sprite: String,
 
-    current_room: String,
+    current_room: Number,
     pos_x: Number,
     pos_y: Number
 });
@@ -22,7 +22,7 @@ userSchema.statics.register = function(username, password, cb) {
 
         sprite: "sPlayer",
 
-        current_room: maps[config.starting_zone].room,
+        current_room: maps[config.starting_zone].id,
         pos_x: maps[config.starting_zone].start_x,
         pos_y: maps[config.starting_zone].start_y
     });

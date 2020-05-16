@@ -15,7 +15,7 @@ module.exports = function() {
             }
         });
 
-        client.broadcastRoom(packet.build(["POS", client.user.username, client.user.pos_x, client.user.pos_y]));
+        client.broadcastRoom(packet.build([[8, cmd["POS"]], client.user.username, client.user.pos_x, client.user.pos_y]));
         
 
         //Add self to room's client list
@@ -31,7 +31,7 @@ module.exports = function() {
         maps[room].clients.splice(idx, 1);
 
         // And tell everyone we're leaving
-        client.broadcastRoom(packet.build(["LEAVE", client.user.username]));
+        client.broadcastRoom(packet.build([[8, cmd["LEAVE"]], client.user.username]));
     };
     this.broadcastRoom = function(packData) {
         maps[client.user.current_room].clients.forEach(function(otherClient) {
@@ -43,7 +43,7 @@ module.exports = function() {
     this.initiate = function() {
 
         // Send the greetings
-        client.socket.write(packet.build(["HELLO", now().toString()]));
+        client.socket.write(packet.build([[8, cmd["HELLO"]], now().toString()]));
 
         console.log("Client initiated.");
     };
@@ -60,7 +60,9 @@ module.exports = function() {
 
     this.end = function() {
         if(typeof client.user !== "undefined") {
-            client.user.save();
+            client.user.save(function(err) {
+                if(err) return console.log("Error! Can't save: "+err);
+            });
             client.leaveRoom(client.user.current_room);
         }
         //client.user.close();

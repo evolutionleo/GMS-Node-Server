@@ -10,10 +10,19 @@ module.exports = packet = {
 
         params.forEach(function(param) {
 
-            if(typeof param === 'string') {
+            if(Array.isArray(param)) {
+                var size = param[0]/8;
+                buffer = Buffer.alloc(size);
+                buffer.writeIntLE(param[1], 0, size);
+            }
+            else if(typeof param === 'string') {
                 buffer = Buffer.alloc(param.length, param, 'utf-8');
                 buffer = Buffer.concat([buffer, zeroBuffer], buffer.length + 1);
                 //console.log('Packing String: ' + param);
+            }
+            else if(typeof param === 'boolean') {
+                buffer = Buffer.alloc(1);
+                buffer.writeUInt8(param);
             }
             else if(typeof param === 'number') {
                 buffer = Buffer.alloc(4);
@@ -58,9 +67,8 @@ module.exports = packet = {
 
         //console.log("Interpret: "+header.command);
 
-        switch(header.command.toUpperCase()) {
+        switch(cmd[header.command]) {
             case "LOGIN":
-
                 var data = PacketModels.login.parse(datapack);
 
                 User.login(data.username, data.password, function(result, user) {
@@ -71,12 +79,12 @@ module.exports = packet = {
 
                     if(result) {
                         c.user = user;
-                        c.socket.write(packet.build(["LOGIN", "TRUE", c.user.current_room, c.user.pos_x, c.user.pos_y, c.user.username]));
+                        c.socket.write(packet.build([[8, cmd["LOGIN"]], [8, 1], [8, c.user.current_room], c.user.pos_x, c.user.pos_y, c.user.username]));
 
                         c.enterRoom(c.user.current_room);
                     }
                     else {
-                        c.socket.write(packet.build(["LOGIN", "FALSE"]));
+                        c.socket.write(packet.build([[8, cmd["LOGIN"]], [8, 0]]));
                     }
 
                     console.log("Login ended.");
@@ -89,14 +97,12 @@ module.exports = packet = {
 
                     if(result) {
                         console.log("Registration Successful!");
-                        c.socket.write(packet.build(["REGISTER", "TRUE"]));
+                        c.socket.write(packet.build([[8, cmd["REGISTER"]], [8, 1]]));
                     }
                     else {
                         console.log("Registration Failed!");
-                        c.socket.write(packet.build(["REGISTER", "FALSE"]));
+                        c.socket.write(packet.build([[8, cmd["REGISTER"]], [8, 0]]));
                     }
-
-                    //console.log("Registration ended.");
                 });
                 break;
             case "POS":
@@ -104,7 +110,7 @@ module.exports = packet = {
                 c.user.pos_x = data.target_x;
                 c.user.pos_y = data.target_y;
                 //c.user.save();
-                c.broadcastRoom(packet.build(["POS", c.user.username, data.target_x, data.target_y]));
+                c.broadcastRoom(packet.build([[8, cmd["POS"]], c.user.username, data.target_x, data.target_y]));
 
                 //console.log(data);
                 break;
@@ -121,9 +127,9 @@ module.exports = packet = {
                 c.user.current_room = data.target_room;
                 c.enterRoom(data.target_room);
 
-                //c.broadcastRoom(packet.build(["POS", c.user.username, pos_x, pos_y]));
+                //c.broadcastRoom(packet.build([cmd["POS"], c.user.username, pos_x, pos_y]));
 
-                c.socket.write(packet.build(["WARP", c.user.current_room, pos_x, pos_y]));
+                c.socket.write(packet.build([[8, cmd["WARP"]], [8, c.user.current_room], pos_x, pos_y]));
                 break;
         }
     }

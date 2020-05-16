@@ -16,10 +16,7 @@ var common_conf = {
         items:  path.join(__dirname, 'Game Data', 'Items'),
         maps: path.join(__dirname, 'Game Data', 'Maps')
     },
-    /*starting_zone: {
-        room: "rMapHome"
-    }*/
-    starting_zone: "rMapHome"
+    starting_zone: 1
 };
 
 var conf = {

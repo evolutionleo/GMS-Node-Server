@@ -6,4 +6,4 @@ exports.start_y = 320;
 
 exports.clients = [];
 
-//maps["hometown.js"] = "rMapHome";
+exports.id = 2;

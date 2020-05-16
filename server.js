@@ -25,7 +25,7 @@ var map_files = fs.readdirSync(config.data_paths.maps);
 map_files.forEach(function(mapFile) {
     console.log('Loading map ', mapFile);
     var map = require(path.join(config.data_paths.maps, mapFile));
-    maps[map.room] = map;
+    maps[map.id] = map;
 });
 
 // Create server
