@@ -13,6 +13,6 @@
         "minimist": "^1.2.5",
         "mongoose": "^5.9.13",
         "performance-now": "^2.1.0",
-        "underscore": "^1.10.2"
+        "underscore": "^1.12.1"
     }
 }
