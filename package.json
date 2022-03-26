@@ -10,7 +10,7 @@
     "dependencies": {
         "binary-parser": "^1.6.2",
         "extend": "^3.0.2",
-        "minimist": "^1.2.5",
+        "minimist": "^1.2.6",
         "mongoose": "^5.9.13",
         "performance-now": "^2.1.0",
         "underscore": "^1.12.1"
